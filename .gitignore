@@ -1,0 +1,31 @@
+# Environment
+.env
+
+# Composer dependencies
+/vendor/
+
+# PHP logs
+/php/app/logs/*.log
+
+# Node modules (jika ada frontend)
+node_modules/
+
+# Docker
+docker-compose.override.yml
+*.env.local
+*.env.*.local
+*.dockerignore
+
+# Backup / database dump
+/db/backups/
+*.sql
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# OS
+Thumbs.db
