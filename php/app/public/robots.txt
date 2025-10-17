@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+
+# Ini web internal, jangan diindeks oleh search engine
