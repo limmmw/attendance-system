@@ -1,0 +1,65 @@
+#version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./php/app:/var/www/html:ro
+    depends_on:
+      - php
+    networks:
+      - internal
+    restart: unless-stopped
+
+  php:
+    build: ./php
+    volumes:
+      - ./php/app:/var/www/html:delegated
+    environment:
+      - DB_HOST=db
+      - DB_NAME=attendance
+      - DB_USER=root
+      - DB_PASS=example
+      - JWT_SECRET=super_secret_change_me
+      - REDIS_HOST=redis
+    networks:
+      - internal
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: attendance
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - internal
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    networks:
+      - internal
+    restart: unless-stopped
+
+  websocket:
+    build: ./websocket
+    networks:
+      - internal
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  db-data:
